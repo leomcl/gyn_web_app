@@ -15,8 +15,8 @@ A production-ready Flutter template using Clean Architecture, BLoC pattern, and 
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/your-repo-name.git
-   cd your-repo-name
+   git clone https://github.com/leomcl/flutter_boilerplate.git
+   cd flutter_boilerplate
    ```
 
 2. **Install dependencies**
