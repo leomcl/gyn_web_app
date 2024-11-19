@@ -55,6 +55,7 @@ firebase-debug.log
 .firebaserc
 firebase-debug.*.log
 ui-debug.log
+firebase.json
 
 # Environment files
 .env
