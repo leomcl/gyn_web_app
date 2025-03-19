@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 
-import '../../data/repositories/message_repository_impl.dart';
 import '../../domain/repositories/message_repository.dart';
 import '../../domain/usecases/get_message_usecase.dart';
 
@@ -75,8 +74,6 @@ Future<void> init() async {
   // Use cases
   sl.registerLazySingleton(() => GetMessageUseCase(sl()));
 
-  // Repositories
-  sl.registerLazySingleton<MessageRepository>(() => MessageRepositoryImpl());
 
   // Register cubits
   sl.registerFactory(() => NavigationCubit());
