@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:snow_stats_app/domain/usecases/get_message_usecase.dart';
+import 'package:gym_web_app/domain/usecases/get_message_usecase.dart';
 
 part 'message_event.dart';
 part 'message_state.dart';
