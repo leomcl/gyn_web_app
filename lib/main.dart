@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:firebase_core/firebase_core.dart'; // Add Firebase core import
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'core/di/injection_container.dart' as di;
 import 'presentation/layout/main_layout.dart';
 import 'presentation/cubit/auth/auth_cubit.dart';
 import 'presentation/cubit/navigation/navigation_cubit.dart';
 import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
+import 'package:snow_stats_app/presentation/cubit/users/users_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,6 +17,9 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Set Firebase Auth persistence BEFORE initializing the app
+  await FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
 
   await di.init();
   runApp(const MyApp());
@@ -32,6 +37,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => NavigationCubit(),
+        ),
+        BlocProvider<UsersCubit>(
+          create: (context) => di.sl<UsersCubit>(),
         ),
       ],
       child: MaterialApp(
