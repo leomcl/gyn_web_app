@@ -6,6 +6,8 @@ import 'core/di/injection_container.dart' as di;
 import 'presentation/layout/main_layout.dart';
 import 'presentation/cubit/auth/auth_cubit.dart';
 import 'presentation/cubit/navigation/navigation_cubit.dart';
+import 'presentation/cubit/theme/theme_cubit.dart';
+import 'presentation/cubit/theme/theme_state.dart';
 import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 import 'package:snow_stats_app/presentation/cubit/users/users_cubit.dart';
@@ -41,12 +43,21 @@ class MyApp extends StatelessWidget {
         BlocProvider<UsersCubit>(
           create: (context) => di.sl<UsersCubit>(),
         ),
+        BlocProvider(
+          create: (context) => ThemeCubit(),
+        ),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        home: const MainLayout(child: SizedBox()),
+      child: BlocBuilder<ThemeCubit, ThemeState>(
+        builder: (context, themeState) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode:
+                themeState is ThemeDark ? ThemeMode.dark : ThemeMode.light,
+            home: const MainLayout(child: SizedBox()),
+          );
+        },
       ),
     );
   }

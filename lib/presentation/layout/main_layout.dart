@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:snow_stats_app/presentation/cubit/auth/auth_cubit.dart';
 import 'package:snow_stats_app/presentation/cubit/navigation/navigation_cubit.dart';
+import 'package:snow_stats_app/presentation/cubit/theme/theme_cubit.dart';
+import 'package:snow_stats_app/presentation/cubit/theme/theme_state.dart';
 import 'package:snow_stats_app/presentation/pages/dashboard_page.dart';
 import 'package:snow_stats_app/presentation/pages/users_page.dart';
 import 'package:snow_stats_app/presentation/pages/usage_page.dart';
@@ -84,6 +86,17 @@ class NavigationSidebar extends StatelessWidget {
             },
           ),
           const Spacer(),
+          BlocBuilder<ThemeCubit, ThemeState>(
+            builder: (context, state) {
+              return _NavItem(
+                icon: state is ThemeDark ? Icons.light_mode : Icons.dark_mode,
+                title: state is ThemeDark ? 'Light Mode' : 'Dark Mode',
+                onTap: () {
+                  context.read<ThemeCubit>().toggleTheme();
+                },
+              );
+            },
+          ),
           _NavItem(
             icon: Icons.logout,
             title: 'Logout',
