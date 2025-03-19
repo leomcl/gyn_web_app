@@ -25,6 +25,7 @@ import 'package:snow_stats_app/domain/usecases/auth/get_auth_state_changes.dart'
 
 // Cubits
 import 'package:snow_stats_app/presentation/cubit/auth/auth_cubit.dart';
+import 'package:snow_stats_app/presentation/cubit/navigation/navigation_cubit.dart';
 
 
 
@@ -76,4 +77,7 @@ Future<void> init() async {
 
   // Repositories
   sl.registerLazySingleton<MessageRepository>(() => MessageRepositoryImpl());
+
+  // Register cubits
+  sl.registerFactory(() => NavigationCubit());
 } 

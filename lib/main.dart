@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_core/firebase_core.dart'; // Add Firebase core import
 import 'core/di/injection_container.dart' as di;
-import 'presentation/pages/home_page.dart';
+import 'presentation/layout/main_layout.dart';
 import 'presentation/cubit/auth/auth_cubit.dart';
+import 'presentation/cubit/navigation/navigation_cubit.dart';
 import 'firebase_options.dart';
+import 'core/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,10 +30,15 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => di.sl<AuthCubit>(),
         ),
+        BlocProvider(
+          create: (context) => NavigationCubit(),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: const HomePage(),
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        home: const MainLayout(child: SizedBox()),
       ),
     );
   }
