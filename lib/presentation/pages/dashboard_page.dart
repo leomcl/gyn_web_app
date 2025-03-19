@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:snow_stats_app/presentation/layout/main_layout.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({Key? key}) : super(key: key);
