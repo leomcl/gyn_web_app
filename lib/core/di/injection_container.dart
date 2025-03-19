@@ -2,9 +2,6 @@ import 'package:get_it/get_it.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../../domain/usecases/get_message_usecase.dart';
-
-
 //repositories
 import 'package:snow_stats_app/domain/repositories/auth_repository.dart';
 import 'package:snow_stats_app/data/repositories/auth_repository_impl.dart';
@@ -64,14 +61,6 @@ Future<void> init() async {
   //! External
   sl.registerLazySingleton(() => FirebaseFirestore.instance);
   sl.registerLazySingleton(() => FirebaseAuth.instance);
-
-
-  // rest from before
-
-
-  // Use cases
-  sl.registerLazySingleton(() => GetMessageUseCase(sl()));
-
 
   // Register cubits
   sl.registerFactory(() => NavigationCubit());
