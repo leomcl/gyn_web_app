@@ -23,17 +23,35 @@ class UsagePage extends StatelessWidget {
                       style: Theme.of(context).textTheme.headlineMedium,
                     ),
                     const SizedBox(height: 24),
-                    _buildCurrentOccupancy(context, state),
-                    const SizedBox(height: 24),
-                    _buildTimePeriodToggle(context, state),
-                    const SizedBox(height: 16),
-                    _buildDateSelector(context, state),
-                    const SizedBox(height: 24),
                     Expanded(
-                      child: _buildOccupancyTable(context, state),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            flex: 3,
+                            child: _buildOccupancyTable(context, state),
+                          ),
+                          const SizedBox(width: 24),
+                          Expanded(
+                            flex: 2,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildDateSelector(context, state),
+                                const SizedBox(height: 16),
+                                _buildTimePeriodToggle(context, state),
+                                const SizedBox(height: 24),
+                                _buildCurrentOccupancy(context, state),
+                                const SizedBox(height: 24),
+                                Expanded(
+                                  child: _buildPeakHoursCard(context, state),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 24),
-                    _buildPeakHoursCard(context, state),
                   ],
                 ),
         );
@@ -45,6 +63,7 @@ class UsagePage extends StatelessWidget {
     final percentage =
         context.read<OccupancyCubit>().getCurrentCapacityPercentage();
     final currentCount = state.currentOccupancy?.currentOccupancy ?? 0;
+    final hasData = state.currentOccupancy != null && currentCount > 0;
 
     return Card(
       child: Padding(
@@ -57,33 +76,38 @@ class UsagePage extends StatelessWidget {
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: LinearProgressIndicator(
-                    value: percentage / 100,
-                    minHeight: 20,
-                    backgroundColor: Colors.grey[300],
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      percentage > 80
-                          ? Colors.red
-                          : percentage > 50
-                              ? Colors.orange
-                              : Colors.green,
-                    ),
+            hasData
+                ? Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: LinearProgressIndicator(
+                          value: percentage / 100,
+                          minHeight: 20,
+                          backgroundColor: Colors.grey[300],
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            percentage > 80
+                                ? Colors.red
+                                : percentage > 50
+                                    ? Colors.orange
+                                    : Colors.green,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        flex: 1,
+                        child: Text(
+                          '$currentCount people\n$percentage% full',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                      ),
+                    ],
+                  )
+                : const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                    child: Center(child: Text('No data available')),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  flex: 1,
-                  child: Text(
-                    '$currentCount people\n$percentage% full',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ),
-              ],
-            ),
           ],
         ),
       ),
@@ -143,7 +167,24 @@ class UsagePage extends StatelessWidget {
 
   Widget _buildOccupancyTable(BuildContext context, OccupancyState state) {
     if (state.averageByHour.isEmpty) {
-      return const Center(child: Text('No data available'));
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Average Occupancy by Hour',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 16),
+              const Expanded(
+                child: Center(child: Text('No data available')),
+              ),
+            ],
+          ),
+        ),
+      );
     }
 
     final sortedEntries = state.averageByHour.entries.toList()
@@ -240,8 +281,7 @@ class UsagePage extends StatelessWidget {
             const SizedBox(height: 16),
             state.peakHours.isEmpty
                 ? const Text('No data available')
-                : Container(
-                    constraints: BoxConstraints(maxHeight: 150),
+                : Expanded(
                     child: SingleChildScrollView(
                       child: Column(
                         children: state.peakHours.map((peak) {

@@ -25,15 +25,37 @@ class OccupancyCubit extends Cubit<OccupancyState> {
   Future<void> loadCurrentOccupancy() async {
     emit(state.copyWith(isLoading: true, error: null));
     try {
+      // If viewing historical data (not today), use the selected date
+      final selectedDate = state.selectedDate;
+      final now = DateTime.now();
+      final isToday = selectedDate.year == now.year &&
+          selectedDate.month == now.month &&
+          selectedDate.day == now.day;
+
+      // For current day, get real-time occupancy
       final currentCount = await getCurrentOccupancy.execute();
 
-      // Create an Occupancy object with the current count
+      // If not today and count is 0, likely no data for this date
+      if (!isToday && currentCount == 0) {
+        emit(state.copyWith(
+          currentOccupancy: null,
+          isLoading: false,
+        ));
+        return;
+      }
+
+      // Get the date to use for display
+      final dateToUse = isToday ? now : selectedDate;
+      final currentHour =
+          isToday ? now.hour : 18; // Use 6PM as default for historical data
+
+      // Create an Occupancy object with the count
       final occupancy = Occupancy(
         entries: currentCount,
         exits: 0,
-        lastUpdated: DateTime.now(),
+        lastUpdated: dateToUse,
         hourId:
-            '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}-${DateTime.now().hour}',
+            '${dateToUse.year}-${dateToUse.month}-${dateToUse.day}-$currentHour',
       );
 
       emit(state.copyWith(
@@ -52,8 +74,12 @@ class OccupancyCubit extends Cubit<OccupancyState> {
     emit(state.copyWith(isLoading: true, error: null));
     try {
       final peaks = await getPeakOccupancyHours(state.selectedDate);
+
+      // Check if any meaningful data exists
+      final hasMeaningfulData = peaks.any((peak) => peak.currentOccupancy > 0);
+
       emit(state.copyWith(
-        peakHours: peaks,
+        peakHours: hasMeaningfulData ? peaks : [],
         isLoading: false,
       ));
     } catch (e) {
@@ -67,28 +93,41 @@ class OccupancyCubit extends Cubit<OccupancyState> {
   Future<void> loadAverageByHour() async {
     emit(state.copyWith(isLoading: true, error: null));
     try {
-      final now = DateTime.now();
+      final selectedDate = state.selectedDate;
       DateTime startDate;
-      DateTime endDate = now;
+      DateTime endDate;
 
       switch (state.timePeriod) {
         case TimePeriod.daily:
-          // Set start date to beginning of current day
-          startDate = DateTime(now.year, now.month, now.day);
+          // Set start date to beginning of selected day
+          startDate =
+              DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
+          endDate = DateTime(selectedDate.year, selectedDate.month,
+              selectedDate.day, 23, 59, 59);
           break;
         case TimePeriod.weekly:
-          // Set start date to 7 days ago
-          startDate = now.subtract(const Duration(days: 7));
+          // Set date range to 7 days ending on selected date
+          endDate = DateTime(selectedDate.year, selectedDate.month,
+              selectedDate.day, 23, 59, 59);
+          startDate = endDate.subtract(const Duration(days: 6));
           break;
         case TimePeriod.monthly:
-          // Set start date to beginning of month
-          startDate = DateTime(now.year, now.month, 1);
+          // Set date range to the month containing the selected date
+          startDate = DateTime(selectedDate.year, selectedDate.month, 1);
+          final nextMonth = selectedDate.month == 12
+              ? DateTime(selectedDate.year + 1, 1, 1)
+              : DateTime(selectedDate.year, selectedDate.month + 1, 1);
+          endDate = nextMonth.subtract(const Duration(days: 1));
           break;
       }
 
       final averages = await getAverageOccupancyByHour(startDate, endDate);
+
+      // Check if there's any meaningful data (non-zero averages)
+      final hasMeaningfulData = averages.values.any((value) => value > 0);
+
       emit(state.copyWith(
-        averageByHour: averages,
+        averageByHour: hasMeaningfulData ? averages : {},
         isLoading: false,
       ));
     } catch (e) {
@@ -101,7 +140,9 @@ class OccupancyCubit extends Cubit<OccupancyState> {
 
   void changeSelectedDate(DateTime date) {
     emit(state.copyWith(selectedDate: date));
+    loadCurrentOccupancy();
     loadPeakHours();
+    loadAverageByHour();
   }
 
   void changeTimePeriod(TimePeriod period) {
@@ -110,9 +151,15 @@ class OccupancyCubit extends Cubit<OccupancyState> {
   }
 
   Future<void> loadAllData() async {
-    await loadCurrentOccupancy();
-    await loadPeakHours();
-    await loadAverageByHour();
+    emit(state.copyWith(isLoading: true));
+    try {
+      await loadCurrentOccupancy();
+      await loadPeakHours();
+      await loadAverageByHour();
+      emit(state.copyWith(isLoading: false));
+    } catch (e) {
+      emit(state.copyWith(isLoading: false, error: e.toString()));
+    }
   }
 
   String getBusiestHourString() {
@@ -126,6 +173,10 @@ class OccupancyCubit extends Cubit<OccupancyState> {
 
   int getCurrentCapacityPercentage() {
     if (state.currentOccupancy == null) return 0;
+
+    // Return 0 if occupancy is 0 (likely no data)
+    if (state.currentOccupancy!.currentOccupancy <= 0) return 0;
+
     // Assuming max capacity of 100 for demonstration
     // This could be a configurable parameter or derived from the data
     const maxCapacity = 100;
