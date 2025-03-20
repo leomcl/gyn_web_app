@@ -19,7 +19,7 @@ class WorkoutsPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Usage Statistics',
+                'Workout Statistics',
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
               const SizedBox(height: 24),
