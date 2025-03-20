@@ -11,6 +11,7 @@ import 'presentation/cubit/theme/theme_state.dart';
 import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 import 'package:snow_stats_app/presentation/cubit/users/users_cubit.dart';
+import 'package:snow_stats_app/presentation/pages/home/home_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,7 +56,9 @@ class MyApp extends StatelessWidget {
             darkTheme: AppTheme.darkTheme,
             themeMode:
                 themeState is ThemeDark ? ThemeMode.dark : ThemeMode.light,
-            home: const MainLayout(child: SizedBox()),
+            home: const MainLayout(
+              child: HomePage(),
+            ),
           );
         },
       ),

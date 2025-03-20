@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:snow_stats_app/presentation/cubit/auth/auth_cubit.dart';
+import 'package:snow_stats_app/presentation/cubit/auth/auth_state.dart';
 import 'package:snow_stats_app/presentation/cubit/navigation/navigation_cubit.dart';
 import 'package:snow_stats_app/presentation/cubit/theme/theme_cubit.dart';
 import 'package:snow_stats_app/presentation/cubit/theme/theme_state.dart';
 import 'package:snow_stats_app/presentation/pages/dashboard_page.dart';
+import 'package:snow_stats_app/presentation/pages/login_page.dart';
 import 'package:snow_stats_app/presentation/pages/users_page.dart';
 import 'package:snow_stats_app/presentation/pages/usage_page.dart';
 
@@ -19,28 +21,47 @@ class MainLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Row(
-        children: [
-          NavigationSidebar(),
-          Expanded(
-            child: BlocBuilder<NavigationCubit, AppPage>(
-              builder: (context, state) {
-                switch (state) {
-                  case AppPage.dashboard:
-                    return const DashboardPage();
-                  case AppPage.users:
-                    return const UsersPage();
-                  case AppPage.usage:
-                    return const UsagePage();
-                  default:
-                    return const DashboardPage();
-                }
-              },
+    return BlocBuilder<AuthCubit, AuthState>(
+      builder: (context, state) {
+        // Show a loading indicator while checking auth status
+        if (state is AuthInitial || state is AuthLoading) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
             ),
-          ),
-        ],
-      ),
+          );
+        }
+
+        // If authenticated, show the main content
+        if (state is Authenticated) {
+          return Scaffold(
+            body: Row(
+              children: [
+                NavigationSidebar(),
+                Expanded(
+                  child: BlocBuilder<NavigationCubit, AppPage>(
+                    builder: (context, state) {
+                      switch (state) {
+                        case AppPage.dashboard:
+                          return const DashboardPage();
+                        case AppPage.users:
+                          return const UsersPage();
+                        case AppPage.usage:
+                          return const UsagePage();
+                        default:
+                          return const DashboardPage();
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        // If not authenticated, show the login page
+        return const LoginPage();
+      },
     );
   }
 }
