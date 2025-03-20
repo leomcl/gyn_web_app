@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-enum AppPage { dashboard, users, usage }
+enum AppPage { dashboard, users, usage, workouts }
 
 class NavigationCubit extends Cubit<AppPage> {
   NavigationCubit() : super(AppPage.dashboard);
