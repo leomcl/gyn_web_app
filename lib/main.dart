@@ -12,6 +12,7 @@ import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 import 'package:snow_stats_app/presentation/cubit/users/users_cubit.dart';
 import 'package:snow_stats_app/presentation/cubit/workout_stats/workout_stats_cubit.dart';
+import 'package:snow_stats_app/presentation/cubit/occupancy/occupancy_cubit.dart';
 import 'package:snow_stats_app/presentation/pages/home/home_page.dart';
 
 void main() async {
@@ -50,6 +51,14 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<WorkoutStatsCubit>(
           create: (context) => di.sl<WorkoutStatsCubit>(),
+        ),
+        BlocProvider<OccupancyCubit>(
+          create: (context) {
+            final cubit = di.sl<OccupancyCubit>();
+            // Load occupancy data when app starts
+            cubit.loadAllData();
+            return cubit;
+          },
         ),
       ],
       child: BlocBuilder<ThemeCubit, ThemeState>(

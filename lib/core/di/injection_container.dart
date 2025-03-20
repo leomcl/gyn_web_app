@@ -17,6 +17,10 @@ import 'package:snow_stats_app/data/repositories/users_repository_impl.dart';
 import 'package:snow_stats_app/domain/repositories/workout_repository.dart';
 import 'package:snow_stats_app/data/repositories/workout_repository_impl.dart';
 
+// repositories - Occupancy
+import 'package:snow_stats_app/domain/repositories/occupancy_repository.dart';
+import 'package:snow_stats_app/data/repositories/occupancy_repository_impl.dart';
+
 // Use cases - Auth
 import 'package:snow_stats_app/domain/usecases/auth/sign_in.dart';
 import 'package:snow_stats_app/domain/usecases/auth/sign_up.dart';
@@ -35,11 +39,19 @@ import 'package:snow_stats_app/domain/usecases/workouts/get_daily_workouts.dart'
 import 'package:snow_stats_app/domain/usecases/workouts/get_weekly_workouts.dart';
 import 'package:snow_stats_app/domain/usecases/workouts/get_monthly_workouts.dart';
 
+// Use cases - Occupancy
+import 'package:snow_stats_app/domain/usecases/occupancy/get_current_occupancy.dart';
+import 'package:snow_stats_app/domain/usecases/occupancy/get_peak_occupancy_hours.dart';
+import 'package:snow_stats_app/domain/usecases/occupancy/get_average_occupancy_by_hour.dart';
+import 'package:snow_stats_app/domain/usecases/occupancy/get_occupancy_trend_by_day.dart';
+import 'package:snow_stats_app/domain/usecases/occupancy/compare_time_periods_occupancy.dart';
+
 // Cubits
 import 'package:snow_stats_app/presentation/cubit/auth/auth_cubit.dart';
 import 'package:snow_stats_app/presentation/cubit/navigation/navigation_cubit.dart';
 import 'package:snow_stats_app/presentation/cubit/users/users_cubit.dart';
 import 'package:snow_stats_app/presentation/cubit/workout_stats/workout_stats_cubit.dart';
+import 'package:snow_stats_app/presentation/cubit/occupancy/occupancy_cubit.dart';
 
 final sl = GetIt.instance;
 
@@ -63,6 +75,9 @@ Future<void> init() async {
   sl.registerLazySingleton<WorkoutRepository>(() => WorkoutRepositoryImpl(
         firestore: sl<FirebaseFirestore>(),
       ));
+  sl.registerLazySingleton<OccupancyRepository>(() => OccupancyRepositoryImpl(
+        firestore: sl<FirebaseFirestore>(),
+      ));
 
   // Use cases - Auth
   sl.registerLazySingleton(() => SignIn(sl()));
@@ -82,6 +97,13 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetWeeklyWorkouts(sl()));
   sl.registerLazySingleton(() => GetMonthlyWorkouts(sl()));
 
+  // Use cases - Occupancy
+  sl.registerLazySingleton(() => GetCurrentOccupancy(sl()));
+  sl.registerLazySingleton(() => GetPeakOccupancyHours(sl()));
+  sl.registerLazySingleton(() => GetAverageOccupancyByHour(sl()));
+  sl.registerLazySingleton(() => GetOccupancyTrendByDay(sl()));
+  sl.registerLazySingleton(() => CompareTimePeriodsOccupancy(sl()));
+
   // Cubits
   sl.registerFactory(() => AuthCubit(
         signInUseCase: sl(),
@@ -98,5 +120,12 @@ Future<void> init() async {
         getDailyWorkouts: sl(),
         getWeeklyWorkouts: sl(),
         getMonthlyWorkouts: sl(),
+      ));
+  sl.registerFactory(() => OccupancyCubit(
+        getCurrentOccupancy: sl(),
+        getPeakOccupancyHours: sl(),
+        getAverageOccupancyByHour: sl(),
+        getOccupancyTrendByDay: sl(),
+        compareTimePeriodsOccupancy: sl(),
       ));
 }
