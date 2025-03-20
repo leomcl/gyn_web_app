@@ -7,8 +7,6 @@ import 'package:snow_stats_app/domain/usecases/auth/get_user_role.dart';
 import 'package:snow_stats_app/domain/usecases/auth/get_current_user.dart';
 import 'package:snow_stats_app/domain/usecases/auth/get_auth_state_changes.dart';
 import 'package:snow_stats_app/presentation/cubit/auth/auth_state.dart';
-import 'package:get_it/get_it.dart';
-import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 
 class AuthCubit extends Cubit<AuthState> {
   final SignIn _signInUseCase;
