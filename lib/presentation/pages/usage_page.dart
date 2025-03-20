@@ -1,121 +1,199 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../cubit/workout_stats/workout_stats_cubit.dart';
+import '../cubit/workout_stats/workout_stats_state.dart';
 
 class UsagePage extends StatelessWidget {
   const UsagePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Usage Statistics',
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
-          const SizedBox(height: 24),
+    // Load workouts when the page is first opened
+    context.read<WorkoutStatsCubit>().loadWorkouts();
 
-          // Filter controls
-          Row(
+    return BlocBuilder<WorkoutStatsCubit, WorkoutStatsState>(
+      builder: (context, state) {
+        return Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(
-                    labelText: 'Time Period',
-                    border: OutlineInputBorder(),
-                  ),
-                  items: const [
-                    DropdownMenuItem(value: 'daily', child: Text('Daily')),
-                    DropdownMenuItem(value: 'weekly', child: Text('Weekly')),
-                    DropdownMenuItem(value: 'monthly', child: Text('Monthly')),
-                  ],
-                  value: 'weekly',
-                  onChanged: (value) {},
-                ),
+              Text(
+                'Usage Statistics',
+                style: Theme.of(context).textTheme.headlineMedium,
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(
-                    labelText: 'Category',
-                    border: OutlineInputBorder(),
+              const SizedBox(height: 24),
+
+              // Filter controls
+              Row(
+                children: [
+                  Expanded(
+                    child: DropdownButtonFormField<TimePeriod>(
+                      decoration: const InputDecoration(
+                        labelText: 'Time Period',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: const [
+                        DropdownMenuItem(
+                            value: TimePeriod.daily, child: Text('Daily')),
+                        DropdownMenuItem(
+                            value: TimePeriod.weekly, child: Text('Weekly')),
+                        DropdownMenuItem(
+                            value: TimePeriod.monthly, child: Text('Monthly')),
+                      ],
+                      value: state.timePeriod,
+                      onChanged: (value) {
+                        if (value != null) {
+                          context
+                              .read<WorkoutStatsCubit>()
+                              .changeTimePeriod(value);
+                        }
+                      },
+                    ),
                   ),
-                  items: const [
-                    DropdownMenuItem(value: 'all', child: Text('All Areas')),
-                    DropdownMenuItem(value: 'weights', child: Text('Weights')),
-                    DropdownMenuItem(value: 'cardio', child: Text('Cardio')),
-                    DropdownMenuItem(value: 'classes', child: Text('Classes')),
-                  ],
-                  value: 'all',
-                  onChanged: (value) {},
-                ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: DropdownButtonFormField<WorkoutCategory>(
+                      decoration: const InputDecoration(
+                        labelText: 'Category',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: const [
+                        DropdownMenuItem(
+                            value: WorkoutCategory.all,
+                            child: Text('All Areas')),
+                        DropdownMenuItem(
+                            value: WorkoutCategory.weights,
+                            child: Text('Weights')),
+                        DropdownMenuItem(
+                            value: WorkoutCategory.cardio,
+                            child: Text('Cardio')),
+                        DropdownMenuItem(
+                            value: WorkoutCategory.classes,
+                            child: Text('Classes')),
+                      ],
+                      value: state.category,
+                      onChanged: (value) {
+                        if (value != null) {
+                          context
+                              .read<WorkoutStatsCubit>()
+                              .changeCategory(value);
+                        }
+                      },
+                    ),
+                  ),
+                ],
               ),
+
+              const SizedBox(height: 24),
+
+              // Usage data display
+              Expanded(
+                child: state.isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : state.error != null
+                        ? Center(child: Text('Error: ${state.error}'))
+                        : state.workouts.isEmpty
+                            ? const Center(
+                                child: Text('No workout data available'))
+                            : _buildWorkoutDataTable(context, state),
+              ),
+
+              const SizedBox(height: 24),
+
+              // Stats summary
+              Row(
+                children: [
+                  Expanded(
+                    child: _StatCard(
+                      title: 'Busiest Day',
+                      value: context.read<WorkoutStatsCubit>().getBusiestDay(),
+                      icon: Icons.calendar_today,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: _StatCard(
+                      title: 'Busiest Time',
+                      value: context.read<WorkoutStatsCubit>().getBusiestTime(),
+                      icon: Icons.access_time,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: _StatCard(
+                      title: 'Most Used',
+                      value: context
+                          .read<WorkoutStatsCubit>()
+                          .getMostUsedEquipment(),
+                      icon: Icons.fitness_center,
+                    ),
+                  ),
+                ],
+              )
             ],
           ),
+        );
+      },
+    );
+  }
 
-          const SizedBox(height: 24),
-
-          // Usage chart placeholder
-          Expanded(
-            child: Card(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.bar_chart,
-                      size: 100,
-                      color: Theme.of(context).primaryColor.withOpacity(0.3),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Usage Chart',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'This is where a chart showing gym usage data would appear',
-                      style: TextStyle(color: Colors.grey),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
+  Widget _buildWorkoutDataTable(BuildContext context, WorkoutStatsState state) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Workout Data',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minWidth: constraints.maxWidth,
+                        ),
+                        child: DataTable(
+                          columnSpacing: 24.0,
+                          horizontalMargin: 12.0,
+                          columns: const [
+                            DataColumn(label: Text('Date')),
+                            DataColumn(label: Text('Type')),
+                            DataColumn(label: Text('Duration')),
+                            DataColumn(label: Text('Equipment')),
+                            DataColumn(label: Text('User')),
+                          ],
+                          rows: state.workouts.map((workout) {
+                            final date = DateTime(
+                                workout.year, workout.month, workout.day);
+                            return DataRow(
+                              cells: [
+                                DataCell(Text(date.toString().split(' ')[0])),
+                                DataCell(Text(workout.workoutType)),
+                                DataCell(Text('${workout.duration} min')),
+                                DataCell(
+                                    Text(workout.workoutTags.keys.join(', '))),
+                                DataCell(Text(workout.userId)),
+                              ],
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
-          ),
-
-          const SizedBox(height: 24),
-
-          // Stats summary
-          Row(
-            children: [
-              Expanded(
-                child: _StatCard(
-                  title: 'Busiest Day',
-                  value: 'Monday',
-                  icon: Icons.calendar_today,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: _StatCard(
-                  title: 'Busiest Time',
-                  value: '6:00 PM',
-                  icon: Icons.access_time,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: _StatCard(
-                  title: 'Most Used',
-                  value: 'Treadmills',
-                  icon: Icons.fitness_center,
-                ),
-              ),
-            ],
-          )
-        ],
+          ],
+        ),
       ),
     );
   }

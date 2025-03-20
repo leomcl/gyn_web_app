@@ -11,6 +11,7 @@ import 'presentation/cubit/theme/theme_state.dart';
 import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 import 'package:snow_stats_app/presentation/cubit/users/users_cubit.dart';
+import 'package:snow_stats_app/presentation/cubit/workout_stats/workout_stats_cubit.dart';
 import 'package:snow_stats_app/presentation/pages/home/home_page.dart';
 
 void main() async {
@@ -46,6 +47,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => ThemeCubit(),
+        ),
+        BlocProvider<WorkoutStatsCubit>(
+          create: (context) => di.sl<WorkoutStatsCubit>(),
         ),
       ],
       child: BlocBuilder<ThemeCubit, ThemeState>(
