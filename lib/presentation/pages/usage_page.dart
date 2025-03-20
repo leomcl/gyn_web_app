@@ -161,9 +161,12 @@ class UsagePage extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Expanded(
-              child: ListView(
-                children: [
-                  DataTable(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: DataTable(
+                    columnSpacing: 24,
                     columns: const [
                       DataColumn(label: Text('Hour')),
                       DataColumn(label: Text('Average Occupancy')),
@@ -184,7 +187,7 @@ class UsagePage extends StatelessWidget {
                         DataCell(Row(
                           children: [
                             Container(
-                              width: 100,
+                              width: 150,
                               height: 20,
                               decoration: BoxDecoration(
                                 color: Theme.of(context)
@@ -206,14 +209,15 @@ class UsagePage extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 8),
-                            Text('$occupancy'),
+                            const SizedBox(width: 12),
+                            Text('$occupancy',
+                                style: TextStyle(fontWeight: FontWeight.bold)),
                           ],
                         )),
                       ]);
                     }).toList(),
                   ),
-                ],
+                ),
               ),
             ),
           ],
@@ -236,26 +240,31 @@ class UsagePage extends StatelessWidget {
             const SizedBox(height: 16),
             state.peakHours.isEmpty
                 ? const Text('No data available')
-                : Column(
-                    children: state.peakHours.map((peak) {
-                      final hour = peak.hour;
-                      final formattedHour = hour > 12
-                          ? '${hour - 12} PM'
-                          : hour == 12
-                              ? '12 PM'
-                              : hour == 0
-                                  ? '12 AM'
-                                  : '$hour AM';
+                : Container(
+                    constraints: BoxConstraints(maxHeight: 150),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: state.peakHours.map((peak) {
+                          final hour = peak.hour;
+                          final formattedHour = hour > 12
+                              ? '${hour - 12} PM'
+                              : hour == 12
+                                  ? '12 PM'
+                                  : hour == 0
+                                      ? '12 AM'
+                                      : '$hour AM';
 
-                      return ListTile(
-                        leading: const Icon(Icons.people),
-                        title: Text(
-                            '$formattedHour (${peak.currentOccupancy} people)'),
-                        subtitle: Text(
-                          DateFormat('EEEE, MMM d').format(peak.date),
-                        ),
-                      );
-                    }).toList(),
+                          return ListTile(
+                            leading: const Icon(Icons.people),
+                            title: Text(
+                                '$formattedHour (${peak.currentOccupancy} people)'),
+                            subtitle: Text(
+                              DateFormat('EEEE, MMM d').format(peak.date),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
                   ),
           ],
         ),

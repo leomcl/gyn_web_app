@@ -51,7 +51,7 @@ class _LoginPageState extends State<LoginPage> {
     return BlocBuilder<AuthCubit, AuthState>(
       builder: (context, state) {
         final isLoading = state is AuthLoading;
-        
+
         return ElevatedButton(
           onPressed: isLoading
               ? null

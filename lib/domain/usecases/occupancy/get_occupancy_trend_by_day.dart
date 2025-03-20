@@ -1,4 +1,4 @@
-import 'package:snow_stats_app/domain/repositories/occupancy_repository.dart';
+import '../../../domain/repositories/occupancy_repository.dart';
 
 class GetOccupancyTrendByDay {
   final OccupancyRepository repository;
@@ -10,20 +10,55 @@ class GetOccupancyTrendByDay {
     final occupancies =
         await repository.getOccupancyForDateRange(startDate, endDate);
 
-    // Group occupancies by day of week
-    final Map<int, List<int>> occupanciesByDay = {};
+    // Group occupancies by date to process each day separately
+    final Map<String, List<dynamic>> occupanciesByDate = {};
 
     for (var occupancy in occupancies) {
-      final dayOfWeek = occupancy.date.weekday;
-      if (!occupanciesByDay.containsKey(dayOfWeek)) {
-        occupanciesByDay[dayOfWeek] = [];
+      final dateStr =
+          '${occupancy.date.year}-${occupancy.date.month}-${occupancy.date.day}';
+      if (!occupanciesByDate.containsKey(dateStr)) {
+        occupanciesByDate[dateStr] = [];
       }
-      occupanciesByDay[dayOfWeek]!.add(occupancy.currentOccupancy);
+      occupanciesByDate[dateStr]!.add(occupancy);
     }
 
-    // Calculate average for each day
+    // For each date, calculate peak occupancy after accounting for cumulative entries/exits
+    final Map<int, List<int>> peakOccupancyByDayOfWeek = {};
+
+    for (var dateStr in occupanciesByDate.keys) {
+      final dateOccupancies = occupanciesByDate[dateStr]!;
+
+      // Sort by hour to process chronologically
+      dateOccupancies.sort((a, b) => a.hour.compareTo(b.hour));
+
+      int cumulativeEntries = 0;
+      int cumulativeExits = 0;
+      int peakOccupancy = 0;
+
+      // Find peak occupancy for this day
+      for (var occupancy in dateOccupancies) {
+        cumulativeEntries += occupancy.entries as int;
+        cumulativeExits += occupancy.exits as int;
+        final currentOccupancy = cumulativeEntries - cumulativeExits;
+
+        if (currentOccupancy > peakOccupancy) {
+          peakOccupancy = currentOccupancy;
+        }
+      }
+
+      // Store peak occupancy for this day's day of week
+      if (dateOccupancies.isNotEmpty) {
+        final dayOfWeek = dateOccupancies[0].date.weekday;
+        if (!peakOccupancyByDayOfWeek.containsKey(dayOfWeek)) {
+          peakOccupancyByDayOfWeek[dayOfWeek] = [];
+        }
+        peakOccupancyByDayOfWeek[dayOfWeek]!.add(peakOccupancy);
+      }
+    }
+
+    // Calculate average peak for each day of week
     final Map<int, double> averageByDay = {};
-    occupanciesByDay.forEach((day, values) {
+    peakOccupancyByDayOfWeek.forEach((day, values) {
       if (values.isNotEmpty) {
         final sum = values.reduce((a, b) => a + b);
         averageByDay[day] = sum / values.length;

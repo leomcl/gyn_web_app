@@ -5,6 +5,7 @@ import '../../../domain/usecases/occupancy/get_average_occupancy_by_hour.dart';
 import '../../../domain/usecases/occupancy/get_occupancy_trend_by_day.dart';
 import '../../../domain/usecases/occupancy/compare_time_periods_occupancy.dart';
 import 'occupancy_state.dart';
+import '../../../domain/entities/occupancy.dart';
 
 class OccupancyCubit extends Cubit<OccupancyState> {
   final GetCurrentOccupancy getCurrentOccupancy;
@@ -24,9 +25,19 @@ class OccupancyCubit extends Cubit<OccupancyState> {
   Future<void> loadCurrentOccupancy() async {
     emit(state.copyWith(isLoading: true, error: null));
     try {
-      final current = await getCurrentOccupancy();
+      final currentCount = await getCurrentOccupancy.execute();
+
+      // Create an Occupancy object with the current count
+      final occupancy = Occupancy(
+        entries: currentCount,
+        exits: 0,
+        lastUpdated: DateTime.now(),
+        hourId:
+            '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}-${DateTime.now().hour}',
+      );
+
       emit(state.copyWith(
-        currentOccupancy: current,
+        currentOccupancy: occupancy,
         isLoading: false,
       ));
     } catch (e) {
