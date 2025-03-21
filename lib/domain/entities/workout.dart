@@ -6,7 +6,7 @@ class Workout {
   final DateTime exitTime;
   final int month;
   final String userId;
-  final Map<String, bool> workoutTags;
+  final List<String> workoutTags;
   final String workoutType;
   final int year;
 

@@ -179,8 +179,7 @@ class WorkoutsPage extends StatelessWidget {
                                 DataCell(Text(date.toString().split(' ')[0])),
                                 DataCell(Text(workout.workoutType)),
                                 DataCell(Text('${workout.duration} min')),
-                                DataCell(
-                                    Text(workout.workoutTags.keys.join(', '))),
+                                DataCell(Text(workout.workoutTags.join(', '))),
                                 DataCell(Text(workout.userId)),
                               ],
                             );

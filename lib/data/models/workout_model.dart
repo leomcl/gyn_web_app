@@ -8,7 +8,7 @@ class WorkoutModel {
   final DateTime exitTime;
   final int month;
   final String userId;
-  final Map<String, bool> workoutTags;
+  final List<String> workoutTags;
   final String workoutType;
   final int year;
 
@@ -30,6 +30,14 @@ class WorkoutModel {
       [SnapshotOptions? options]) {
     final data = snapshot.data()!;
 
+    // Convert Map<String, bool> to List<String> by keeping only tags with true values
+    Map<String, bool> tagsMap =
+        Map<String, bool>.from(data['workoutTags'] ?? {});
+    List<String> tagsList = tagsMap.entries
+        .where((entry) => entry.value == true)
+        .map((entry) => entry.key)
+        .toList();
+
     return WorkoutModel(
       day: data['day'] ?? 0,
       dayOfWeek: data['dayOfWeek'] ?? 0,
@@ -38,13 +46,16 @@ class WorkoutModel {
       exitTime: (data['exitTime'] as Timestamp).toDate(),
       month: data['month'] ?? 0,
       userId: data['userId'] ?? '',
-      workoutTags: Map<String, bool>.from(data['workoutTags'] ?? {}),
+      workoutTags: tagsList,
       workoutType: data['workoutType'] ?? '',
       year: data['year'] ?? 0,
     );
   }
 
   Map<String, dynamic> toFirestore() {
+    // Convert List<String> back to Map<String, bool> for Firestore
+    Map<String, bool> tagsMap = {for (var tag in workoutTags) tag: true};
+
     return {
       'day': day,
       'dayOfWeek': dayOfWeek,
@@ -53,7 +64,7 @@ class WorkoutModel {
       'exitTime': Timestamp.fromDate(exitTime),
       'month': month,
       'userId': userId,
-      'workoutTags': workoutTags,
+      'workoutTags': tagsMap,
       'workoutType': workoutType,
       'year': year,
     };
