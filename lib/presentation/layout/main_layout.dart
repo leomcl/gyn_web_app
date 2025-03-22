@@ -11,6 +11,7 @@ import 'package:snow_stats_app/presentation/pages/login_page.dart';
 import 'package:snow_stats_app/presentation/pages/users_page.dart';
 import 'package:snow_stats_app/presentation/pages/usage_page.dart';
 import 'package:snow_stats_app/presentation/pages/workouts_page.dart';
+import 'package:snow_stats_app/presentation/pages/gym_classes_page.dart';
 
 class MainLayout extends StatelessWidget {
   final Widget child;
@@ -51,6 +52,8 @@ class MainLayout extends StatelessWidget {
                           return const UsagePage();
                         case AppPage.workouts:
                           return const WorkoutsPage();
+                        case AppPage.classes:
+                          return const GymClassesPage();
                         default:
                           return const DashboardPage();
                       }
@@ -114,6 +117,13 @@ class NavigationSidebar extends StatelessWidget {
             title: 'Workouts',
             onTap: () {
               context.read<NavigationCubit>().navigateTo(AppPage.workouts);
+            },
+          ),
+          _NavItem(
+            icon: Icons.fitness_center,
+            title: 'Classes',
+            onTap: () {
+              context.read<NavigationCubit>().navigateTo(AppPage.classes);
             },
           ),
           const Spacer(),

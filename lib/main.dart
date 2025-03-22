@@ -13,7 +13,10 @@ import 'core/theme/app_theme.dart';
 import 'package:snow_stats_app/presentation/cubit/users/users_cubit.dart';
 import 'package:snow_stats_app/presentation/cubit/workout_stats/workout_stats_cubit.dart';
 import 'package:snow_stats_app/presentation/cubit/occupancy/occupancy_cubit.dart';
+import 'package:snow_stats_app/presentation/cubit/gym_classes/gym_classes_cubit.dart';
+
 import 'package:snow_stats_app/presentation/pages/home/home_page.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -59,6 +62,9 @@ class MyApp extends StatelessWidget {
             cubit.loadAllData();
             return cubit;
           },
+        ),
+        BlocProvider<GymClassesCubit>(
+          create: (context) => di.sl<GymClassesCubit>(),
         ),
       ],
       child: BlocBuilder<ThemeCubit, ThemeState>(

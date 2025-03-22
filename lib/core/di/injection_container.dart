@@ -21,6 +21,10 @@ import 'package:snow_stats_app/data/repositories/workout_repository_impl.dart';
 import 'package:snow_stats_app/domain/repositories/occupancy_repository.dart';
 import 'package:snow_stats_app/data/repositories/occupancy_repository_impl.dart';
 
+// repositories - Gym Classes
+import 'package:snow_stats_app/domain/repositories/gym_class_repository.dart';
+import 'package:snow_stats_app/data/repositories/gym_class_repository_impl.dart';
+
 // Use cases - Auth
 import 'package:snow_stats_app/domain/usecases/auth/sign_in.dart';
 import 'package:snow_stats_app/domain/usecases/auth/sign_up.dart';
@@ -46,12 +50,23 @@ import 'package:snow_stats_app/domain/usecases/occupancy/get_average_occupancy_b
 import 'package:snow_stats_app/domain/usecases/occupancy/get_occupancy_trend_by_day.dart';
 import 'package:snow_stats_app/domain/usecases/occupancy/compare_time_periods_occupancy.dart';
 
+// Use cases - Gym Classes
+import 'package:snow_stats_app/domain/usecases/gym_classes/get_all_classes.dart';
+import 'package:snow_stats_app/domain/usecases/gym_classes/get_class_by_id.dart';
+import 'package:snow_stats_app/domain/usecases/gym_classes/get_classes_by_date.dart';
+import 'package:snow_stats_app/domain/usecases/gym_classes/get_classes_by_tag.dart';
+import 'package:snow_stats_app/domain/usecases/gym_classes/get_classes_by_date_range.dart';
+import 'package:snow_stats_app/domain/usecases/gym_classes/create_class.dart';
+import 'package:snow_stats_app/domain/usecases/gym_classes/update_class.dart';
+import 'package:snow_stats_app/domain/usecases/gym_classes/delete_class.dart';
+
 // Cubits
 import 'package:snow_stats_app/presentation/cubit/auth/auth_cubit.dart';
 import 'package:snow_stats_app/presentation/cubit/navigation/navigation_cubit.dart';
 import 'package:snow_stats_app/presentation/cubit/users/users_cubit.dart';
 import 'package:snow_stats_app/presentation/cubit/workout_stats/workout_stats_cubit.dart';
 import 'package:snow_stats_app/presentation/cubit/occupancy/occupancy_cubit.dart';
+import 'package:snow_stats_app/presentation/cubit/gym_classes/gym_classes_cubit.dart';
 
 final sl = GetIt.instance;
 
@@ -76,6 +91,9 @@ Future<void> init() async {
         firestore: sl<FirebaseFirestore>(),
       ));
   sl.registerLazySingleton<OccupancyRepository>(() => OccupancyRepositoryImpl(
+        firestore: sl<FirebaseFirestore>(),
+      ));
+  sl.registerLazySingleton<GymClassRepository>(() => GymClassRepositoryImpl(
         firestore: sl<FirebaseFirestore>(),
       ));
 
@@ -104,6 +122,16 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetOccupancyTrendByDay(sl()));
   sl.registerLazySingleton(() => CompareTimePeriodsOccupancy(sl()));
 
+  // Use cases - Gym Classes
+  sl.registerLazySingleton(() => GetAllClasses(sl()));
+  sl.registerLazySingleton(() => GetClassById(sl()));
+  sl.registerLazySingleton(() => GetClassesByDate(sl()));
+  sl.registerLazySingleton(() => GetClassesByTag(sl()));
+  sl.registerLazySingleton(() => GetClassesByDateRange(sl()));
+  sl.registerLazySingleton(() => CreateClass(sl()));
+  sl.registerLazySingleton(() => UpdateClass(sl()));
+  sl.registerLazySingleton(() => DeleteClass(sl()));
+
   // Cubits
   sl.registerFactory(() => AuthCubit(
         signInUseCase: sl(),
@@ -127,5 +155,14 @@ Future<void> init() async {
         getAverageOccupancyByHour: sl(),
         getOccupancyTrendByDay: sl(),
         compareTimePeriodsOccupancy: sl(),
+      ));
+  sl.registerFactory(() => GymClassesCubit(
+        getAllClasses: sl(),
+        getClassById: sl(),
+        getClassesByDate: sl(),
+        getClassesByTag: sl(),
+        createClass: sl(),
+        updateClass: sl(),
+        deleteClass: sl(),
       ));
 }
