@@ -169,7 +169,7 @@ class GymClassesPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                    'Time: ${DateFormat('MMM d, yyyy - h:mm a').format(gymClass.classTime)}'),
+                    'Time: ${_formatTimeWithDay(gymClass.classTime, gymClass.dayOfWeek)}'),
                 const SizedBox(height: 8),
                 const Text('Tags:'),
                 Wrap(
@@ -400,6 +400,20 @@ class GymClassesPage extends StatelessWidget {
   }
 }
 
+String _formatTimeWithDay(DateTime time, int dayOfWeek) {
+  final List<String> days = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday'
+  ];
+  final timeFormat = DateFormat('h:mm a');
+  return '${timeFormat.format(time)} ${days[dayOfWeek - 1]}';
+}
+
 class _ClassCard extends StatelessWidget {
   final GymClass gymClass;
   final VoidCallback onTap;
@@ -428,7 +442,7 @@ class _ClassCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                DateFormat('MMM d, yyyy - h:mm a').format(gymClass.classTime),
+                _formatTimeWithDay(gymClass.classTime, gymClass.dayOfWeek),
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: 8),
