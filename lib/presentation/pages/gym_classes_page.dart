@@ -371,7 +371,8 @@ class GymClassesPage extends StatelessWidget {
                   final newClass = GymClass(
                     classId: existingClass?.classId ?? '',
                     className: className,
-                    dayOfWeek: selectedTime.weekday - 1, // Convert 1-7 to 0-6
+                    dayOfWeek: selectedTime
+                        .weekday, // Using standard format where Monday = 1
                     timeOfDay: selectedTime.hour * 60 +
                         selectedTime
                             .minute, // Convert to minutes since midnight
