@@ -15,6 +15,8 @@ import 'package:snow_stats_app/presentation/cubit/user_details/user_details_cubi
 import 'package:snow_stats_app/presentation/cubit/workout_stats/workout_stats_cubit.dart';
 import 'package:snow_stats_app/presentation/cubit/occupancy/occupancy_cubit.dart';
 import 'package:snow_stats_app/presentation/cubit/gym_classes/gym_classes_cubit.dart';
+import 'package:snow_stats_app/presentation/cubits/gym_trends_cubit.dart';
+
 
 import 'package:snow_stats_app/presentation/pages/home/home_page.dart';
 
@@ -68,6 +70,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<GymClassesCubit>(
           create: (context) => di.sl<GymClassesCubit>(),
+        ),
+        BlocProvider<GymTrendsCubit>(
+          create: (context) => di.sl<GymTrendsCubit>(),
         ),
       ],
       child: BlocBuilder<ThemeCubit, ThemeState>(

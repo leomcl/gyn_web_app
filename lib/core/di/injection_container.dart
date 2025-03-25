@@ -66,6 +66,12 @@ import 'package:snow_stats_app/domain/usecases/gym_classes/delete_class.dart';
 import 'package:snow_stats_app/domain/usecases/user_trends/get_user_prefered_day.dart';
 import 'package:snow_stats_app/domain/usecases/user_trends/get_user_prefered_workout.dart';
 
+// Use cases - General Trends
+import 'package:snow_stats_app/domain/usecases/general_trends/get_busy_times.dart';
+import 'package:snow_stats_app/domain/usecases/general_trends/get_most_common_workout.dart';
+import 'package:snow_stats_app/domain/usecases/general_trends/get_busy_class.dart';
+import 'package:snow_stats_app/domain/usecases/general_trends/get_busy_day.dart';
+
 // Cubits
 import 'package:snow_stats_app/presentation/cubit/auth/auth_cubit.dart';
 import 'package:snow_stats_app/presentation/cubit/navigation/navigation_cubit.dart';
@@ -74,6 +80,7 @@ import 'package:snow_stats_app/presentation/cubit/user_details/user_details_cubi
 import 'package:snow_stats_app/presentation/cubit/workout_stats/workout_stats_cubit.dart';
 import 'package:snow_stats_app/presentation/cubit/occupancy/occupancy_cubit.dart';
 import 'package:snow_stats_app/presentation/cubit/gym_classes/gym_classes_cubit.dart';
+import 'package:snow_stats_app/presentation/cubits/gym_trends_cubit.dart';
 
 final sl = GetIt.instance;
 
@@ -135,6 +142,14 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetOccupancyTrendByDay(sl()));
   sl.registerLazySingleton(() => CompareTimePeriodsOccupancy(sl()));
 
+  // Use cases - General Trends
+  sl.registerLazySingleton(
+      () => GetOptimalWorkoutTimes(occupancyRepository: sl()));
+  sl.registerLazySingleton(
+      () => GetMostCommonWorkout(sl<GetMonthlyWorkouts>()));
+  sl.registerLazySingleton(() => GetBusyClass(sl<GetMonthlyWorkouts>()));
+  sl.registerLazySingleton(() => GetBusyDay(sl<GetMonthlyWorkouts>()));
+
   // Use cases - Gym Classes
   sl.registerLazySingleton(() => GetAllClasses(sl()));
   sl.registerLazySingleton(() => GetClassById(sl()));
@@ -182,5 +197,11 @@ Future<void> init() async {
         createClass: sl(),
         updateClass: sl(),
         deleteClass: sl(),
+      ));
+  sl.registerFactory(() => GymTrendsCubit(
+        getOptimalWorkoutTimes: sl(),
+        getMostCommonWorkout: sl(),
+        getBusyClass: sl(),
+        getBusyDay: sl(),
       ));
 }
