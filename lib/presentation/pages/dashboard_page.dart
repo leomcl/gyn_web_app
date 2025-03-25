@@ -1,11 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import '../widgets/gym_trends_widget.dart';
-import '../cubits/gym_trends_cubit.dart';
-import '../../domain/usecases/general_trends/get_busy_times.dart';
-import '../../domain/usecases/general_trends/get_most_common_workout.dart';
-import '../../domain/usecases/general_trends/get_busy_class.dart';
-import '../../domain/usecases/general_trends/get_busy_day.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({Key? key}) : super(key: key);
