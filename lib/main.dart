@@ -11,12 +11,12 @@ import 'presentation/cubit/theme/theme_state.dart';
 import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 import 'package:snow_stats_app/presentation/cubit/users/users_cubit.dart';
+import 'package:snow_stats_app/presentation/cubit/user_details/user_details_cubit.dart';
 import 'package:snow_stats_app/presentation/cubit/workout_stats/workout_stats_cubit.dart';
 import 'package:snow_stats_app/presentation/cubit/occupancy/occupancy_cubit.dart';
 import 'package:snow_stats_app/presentation/cubit/gym_classes/gym_classes_cubit.dart';
 
 import 'package:snow_stats_app/presentation/pages/home/home_page.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,6 +48,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<UsersCubit>(
           create: (context) => di.sl<UsersCubit>(),
+        ),
+        BlocProvider<UserDetailsCubit>(
+          create: (context) => di.sl<UserDetailsCubit>(),
         ),
         BlocProvider(
           create: (context) => ThemeCubit(),
