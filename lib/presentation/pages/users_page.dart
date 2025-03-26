@@ -15,6 +15,7 @@ class UsersPage extends StatefulWidget {
 
 class _UsersPageState extends State<UsersPage> {
   final TextEditingController _searchController = TextEditingController();
+  final Map<String, bool> _loadingStates = {};
 
   @override
   void initState() {
@@ -86,9 +87,16 @@ class _UsersPageState extends State<UsersPage> {
               DataColumn(label: Text('Email')),
               DataColumn(label: Text('Role')),
               DataColumn(label: Text('Membership')),
+              DataColumn(label: Text('Status')),
               DataColumn(label: Text('Actions')),
             ],
             rows: users.map((user) {
+              // Simple check for warning icon - premium user with no workout in 30+ days
+              bool showWarning = user.membershipStatus &&
+                  (user.lastWorkoutDate == null ||
+                      user.lastWorkoutDate!.isBefore(
+                          DateTime.now().subtract(const Duration(days: 30))));
+
               return DataRow(
                 onSelectChanged: (selected) {
                   if (selected ?? false) {
@@ -99,6 +107,16 @@ class _UsersPageState extends State<UsersPage> {
                   DataCell(Text(user.email)),
                   DataCell(Text(user.role ?? 'User')),
                   DataCell(Text(user.membershipStatus ? 'Premium' : 'Basic')),
+                  // Simple status cell with warning icon
+                  DataCell(
+                    showWarning
+                        ? const Tooltip(
+                            message: 'Premium member inactive for 30+ days',
+                            child: Icon(Icons.warning_amber_rounded,
+                                color: Colors.amber),
+                          )
+                        : const SizedBox.shrink(),
+                  ),
                   DataCell(
                     Row(
                       children: [

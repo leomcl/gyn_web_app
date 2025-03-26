@@ -38,6 +38,7 @@ import 'package:snow_stats_app/domain/usecases/users/get_all_users.dart';
 import 'package:snow_stats_app/domain/usecases/users/get_user_by_uid.dart';
 import 'package:snow_stats_app/domain/usecases/users/get_user_details.dart';
 import 'package:snow_stats_app/domain/usecases/users/get_last_user_workout.dart';
+import 'package:snow_stats_app/domain/usecases/users/get_users_with_last_workout.dart';
 
 // Use cases - Workouts
 import 'package:snow_stats_app/domain/usecases/workouts/get_all_workouts.dart';
@@ -124,7 +125,11 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetAllUsers(sl()));
   sl.registerLazySingleton(() => GetUserByUid(sl()));
   sl.registerLazySingleton(() => GetUserDetails(sl()));
-  sl.registerLazySingleton(() => GetLastUserWorkout(sl()));
+  sl.registerLazySingleton(() => GetLastUserWorkout(sl<GetUserWorkouts>()));
+  sl.registerLazySingleton(() => GetUsersWithLastWorkout(
+        getAllUsers: sl<GetAllUsers>(),
+        getLastUserWorkout: sl<GetLastUserWorkout>(),
+      ));
 
   // Use cases - Workouts
   sl.registerLazySingleton(() => GetAllWorkouts(sl()));
@@ -172,7 +177,9 @@ Future<void> init() async {
         getAuthStateChangesUseCase: sl(),
       ));
   sl.registerFactory(() => NavigationCubit());
-  sl.registerFactory(() => UsersCubit(getAllUsers: sl()));
+  sl.registerFactory(() => UsersCubit(
+        getUsersWithLastWorkout: sl<GetUsersWithLastWorkout>(),
+      ));
   sl.registerFactory(() => UserDetailsCubit(
         getUserDetails: sl(),
         getUserPreferedDays: sl(),

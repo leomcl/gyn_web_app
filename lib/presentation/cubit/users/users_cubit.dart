@@ -1,14 +1,14 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:snow_stats_app/domain/usecases/users/get_all_users.dart';
+import 'package:snow_stats_app/domain/usecases/users/get_users_with_last_workout.dart';
 import 'package:snow_stats_app/presentation/cubit/users/users_state.dart';
 import 'package:get_it/get_it.dart';
 import 'package:snow_stats_app/domain/repositories/auth_repository.dart';
 
 class UsersCubit extends Cubit<UsersState> {
-  final GetAllUsers _getAllUsers;
+  final GetUsersWithLastWorkout _getUsersWithLastWorkout;
 
-  UsersCubit({required GetAllUsers getAllUsers})
-      : _getAllUsers = getAllUsers,
+  UsersCubit({required GetUsersWithLastWorkout getUsersWithLastWorkout})
+      : _getUsersWithLastWorkout = getUsersWithLastWorkout,
         super(UsersInitial());
 
   Future<void> loadUsers() async {
@@ -24,8 +24,7 @@ class UsersCubit extends Cubit<UsersState> {
         return;
       }
 
-      // If we got here, we have a valid user, fetch the users list
-      final users = await _getAllUsers.execute();
+      final users = await _getUsersWithLastWorkout.execute();
       emit(UsersLoaded(users));
     } catch (e) {
       emit(UsersError(e.toString()));
