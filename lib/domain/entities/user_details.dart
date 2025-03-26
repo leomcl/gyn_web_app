@@ -7,6 +7,7 @@ class UserDetails {
   final bool membershipStatus;
   final List<int> preferredDays;
   final List<String> preferredWorkouts;
+  final DateTime? lastWorkoutDate;
 
   UserDetails({
     required this.uid,
@@ -15,6 +16,7 @@ class UserDetails {
     this.membershipStatus = false,
     this.preferredDays = const [],
     this.preferredWorkouts = const [],
+    this.lastWorkoutDate,
   });
 
   factory UserDetails.fromUser(User user) {
@@ -23,6 +25,7 @@ class UserDetails {
       email: user.email,
       role: user.role,
       membershipStatus: user.membershipStatus,
+      lastWorkoutDate: user.lastWorkoutDate,
     );
   }
 }

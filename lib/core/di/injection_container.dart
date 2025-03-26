@@ -37,6 +37,7 @@ import 'package:snow_stats_app/domain/usecases/auth/get_auth_state_changes.dart'
 import 'package:snow_stats_app/domain/usecases/users/get_all_users.dart';
 import 'package:snow_stats_app/domain/usecases/users/get_user_by_uid.dart';
 import 'package:snow_stats_app/domain/usecases/users/get_user_details.dart';
+import 'package:snow_stats_app/domain/usecases/users/get_last_user_workout.dart';
 
 // Use cases - Workouts
 import 'package:snow_stats_app/domain/usecases/workouts/get_all_workouts.dart';
@@ -123,6 +124,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetAllUsers(sl()));
   sl.registerLazySingleton(() => GetUserByUid(sl()));
   sl.registerLazySingleton(() => GetUserDetails(sl()));
+  sl.registerLazySingleton(() => GetLastUserWorkout(sl()));
 
   // Use cases - Workouts
   sl.registerLazySingleton(() => GetAllWorkouts(sl()));
@@ -175,6 +177,7 @@ Future<void> init() async {
         getUserDetails: sl(),
         getUserPreferedDays: sl(),
         getUserPreferedWorkout: sl(),
+        getLastUserWorkout: sl(),
       ));
   sl.registerFactory(() => WorkoutStatsCubit(
         getAllWorkouts: sl(),

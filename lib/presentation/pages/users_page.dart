@@ -189,6 +189,14 @@ class _UsersPageState extends State<UsersPage> {
                                     ? 'Premium'
                                     : 'Basic'),
                               ),
+                              ListTile(
+                                  title: const Text('Last Workout'),
+                                  subtitle: Text(details.lastWorkoutDate != null
+                                      ? details.lastWorkoutDate!
+                                          .toString()
+                                          .split(
+                                              ' ')[0] // Show only the date part
+                                      : 'No workout yet')),
                               if (details.preferredDays.isNotEmpty)
                                 ExpansionTile(
                                   title: const Text('Preferred Days'),
