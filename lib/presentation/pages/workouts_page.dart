@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/workout_stats/workout_stats_cubit.dart';
 import '../cubit/workout_stats/workout_stats_state.dart';
+import '../widgets/workout_section.dart';
 
 class WorkoutsPage extends StatelessWidget {
   const WorkoutsPage({Key? key}) : super(key: key);
@@ -89,6 +90,7 @@ class WorkoutsPage extends StatelessWidget {
 
               // Usage data display
               Expanded(
+                flex: 3,
                 child: state.isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : state.error != null
@@ -99,37 +101,23 @@ class WorkoutsPage extends StatelessWidget {
                             : _buildWorkoutDataTable(context, state),
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
 
-              // Stats summary
-              Row(
-                children: [
-                  Expanded(
-                    child: _StatCard(
-                      title: 'Busiest Day',
-                      value: context.read<WorkoutStatsCubit>().getBusiestDay(),
-                      icon: Icons.calendar_today,
-                    ),
+              // Additional sections from dashboard
+              Container(
+                height: 180, // Fixed height instead of constraint
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: LayoutBuilder(builder: (context, constraints) {
+                      return SingleChildScrollView(
+                        child: EquipmentUtilizationSection(
+                          limit: 2, // Reduced limit to show less items
+                        ),
+                      );
+                    }),
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _StatCard(
-                      title: 'Busiest Time',
-                      value: context.read<WorkoutStatsCubit>().getBusiestTime(),
-                      icon: Icons.access_time,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _StatCard(
-                      title: 'Most Used',
-                      value: context
-                          .read<WorkoutStatsCubit>()
-                          .getMostUsedEquipment(),
-                      icon: Icons.fitness_center,
-                    ),
-                  ),
-                ],
+                ),
               )
             ],
           ),
