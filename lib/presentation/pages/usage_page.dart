@@ -17,25 +17,28 @@ class UsagePage extends StatelessWidget {
               ? const Center(child: CircularProgressIndicator())
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       'Gym Usage',
                       style: Theme.of(context).textTheme.headlineMedium,
                     ),
                     const SizedBox(height: 24),
-                    Expanded(
+                    SizedBox(
+                      height: 600, // Set a fixed height based on your UI needs
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(
+                          Flexible(
                             flex: 3,
                             child: _buildOccupancyTable(context, state),
                           ),
                           const SizedBox(width: 24),
-                          Expanded(
+                          Flexible(
                             flex: 2,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 _buildDateSelector(context, state),
                                 const SizedBox(height: 16),
@@ -43,9 +46,6 @@ class UsagePage extends StatelessWidget {
                                 const SizedBox(height: 24),
                                 _buildCurrentOccupancy(context, state),
                                 const SizedBox(height: 24),
-                                Expanded(
-                                  child: _buildPeakHoursCard(context, state),
-                                ),
                               ],
                             ),
                           ),
@@ -70,6 +70,7 @@ class UsagePage extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               'Current Occupancy',
@@ -79,7 +80,7 @@ class UsagePage extends StatelessWidget {
             hasData
                 ? Row(
                     children: [
-                      Expanded(
+                      Flexible(
                         flex: 3,
                         child: LinearProgressIndicator(
                           value: percentage / 100,
@@ -95,7 +96,7 @@ class UsagePage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      Expanded(
+                      Flexible(
                         flex: 1,
                         child: Text(
                           '$currentCount people\n$percentage% full',
@@ -172,13 +173,15 @@ class UsagePage extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Text(
                 'Average Occupancy by Hour',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 16),
-              const Expanded(
+              const SizedBox(
+                height: 400,
                 child: Center(child: Text('No data available')),
               ),
             ],
@@ -195,13 +198,15 @@ class UsagePage extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               'Average Occupancy by Hour',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 16),
-            Expanded(
+            SizedBox(
+              height: 400,
               child: SingleChildScrollView(
                 scrollDirection: Axis.vertical,
                 child: SingleChildScrollView(
@@ -267,46 +272,23 @@ class UsagePage extends StatelessWidget {
     );
   }
 
-  Widget _buildPeakHoursCard(BuildContext context, OccupancyState state) {
-    return Card(
+  // Helper widget to create a consistent grid card
+  Widget _buildGridCard({
+    required BuildContext context,
+    required Widget child,
+  }) {
+    return Flexible(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Peak Hours',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 16),
-            state.peakHours.isEmpty
-                ? const Text('No data available')
-                : Expanded(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: state.peakHours.map((peak) {
-                          final hour = peak.hour;
-                          final formattedHour = hour > 12
-                              ? '${hour - 12} PM'
-                              : hour == 12
-                                  ? '12 PM'
-                                  : hour == 0
-                                      ? '12 AM'
-                                      : '$hour AM';
-
-                          return ListTile(
-                            leading: const Icon(Icons.people),
-                            title: Text(
-                                '$formattedHour (${peak.currentOccupancy} people)'),
-                            subtitle: Text(
-                              DateFormat('EEEE, MMM d').format(peak.date),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
-          ],
+        padding: const EdgeInsets.all(8.0),
+        child: Card(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: child,
+          ),
         ),
       ),
     );

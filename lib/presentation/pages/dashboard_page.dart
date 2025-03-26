@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
-import '../widgets/gym_trends_widget.dart';
-import '../cubits/gym_trends_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../cubits/gym_trends_cubit.dart';
+
+// Import the individual section widgets
+import '../widgets/member_traffic_section.dart';
+import '../widgets/workout_section.dart';
+import '../widgets/class_performance_section.dart';
+import '../widgets/staffing_requirements_section.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({Key? key}) : super(key: key);
@@ -32,11 +37,13 @@ class DesktopDashboard extends StatelessWidget {
               sliver: SliverToBoxAdapter(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     // Title and summary cards
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
+                        Flexible(
                           flex: 3,
                           child: Card(
                             elevation: 2,
@@ -47,6 +54,7 @@ class DesktopDashboard extends StatelessWidget {
                               padding: const EdgeInsets.all(24.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(
                                     'Gym Performance Overview',
@@ -67,7 +75,7 @@ class DesktopDashboard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 24),
-                        Expanded(
+                        Flexible(
                           flex: 1,
                           child: _SummaryCard(
                             title: 'Members',
@@ -78,7 +86,7 @@ class DesktopDashboard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 16),
-                        Expanded(
+                        Flexible(
                           flex: 1,
                           child: _SummaryCard(
                             title: 'Revenue',
@@ -108,6 +116,7 @@ class DesktopDashboard extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.all(48.0),
                           child: Column(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               const Icon(
                                 Icons.error_outline,
@@ -139,163 +148,94 @@ class DesktopDashboard extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
 
-                      // First row - 4 widgets
-                      SizedBox(
-                        height: 280,
-                        child: Row(
-                          children: [
-                            _buildGridCard(
-                              context: context,
-                              child: GymTrendCard(
-                                title: 'Peak Hours',
-                                subtitle: 'Staff allocation needed',
-                                items: state.busyTimes
-                                    .map((hour) => _formatHour(hour))
-                                    .toList(),
-                                icon: Icons.people,
-                                color: Colors.orange,
-                                limit: 3,
-                              ),
+                      // First row - Using widget sections (now a column)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _buildGridCard(
+                            context: context,
+                            child: StaffingRequirementsSection(
+                              limit: 3,
                             ),
-                            _buildGridCard(
-                              context: context,
-                              child: GymTrendCard(
-                                title: 'High-Demand Programs',
-                                subtitle: 'Consider expanding capacity',
-                                items: state.popularWorkouts,
-                                icon: Icons.fitness_center,
-                                color: Colors.blue,
-                                limit: 3,
-                              ),
+                          ),
+                          const SizedBox(
+                              height: 16), // Add spacing between sections
+                          _buildGridCard(
+                            context: context,
+                            child: ClassPerformanceSection(
+                              limit: 3,
                             ),
-                            _buildGridCard(
-                              context: context,
-                              child: GymTrendCard(
-                                title: 'High-Attendance Classes',
-                                subtitle: 'Consider additional sessions',
-                                items: state.popularClasses,
-                                icon: Icons.group,
-                                color: Colors.teal,
-                                limit: 3,
-                              ),
-                            ),
-                            _buildGridCard(
-                              context: context,
-                              child: GymTrendCard(
-                                title: 'Low-Attendance Classes',
-                                subtitle: 'Review or repurpose timeslots',
-                                items: state.unpopularClasses,
-                                icon: Icons.group_outlined,
-                                color: Colors.indigo,
-                                limit: 3,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
 
                       const SizedBox(height: 16),
 
-                      // Second row - 4 widgets
-                      SizedBox(
-                        height: 280,
-                        child: Row(
-                          children: [
-                            _buildGridCard(
-                              context: context,
-                              child: GymTrendCard(
-                                title: 'Low Traffic Hours',
-                                subtitle: 'Opportunity for training',
-                                items: state.leastBusyTimes
-                                    .map((hour) => _formatHour(hour))
-                                    .toList(),
-                                icon: Icons.access_time,
-                                color: Colors.green,
-                                limit: 4,
-                              ),
+                      // Second row sections
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _buildGridCard(
+                            context: context,
+                            child: MemberTrafficSection(
+                              limit: 3,
                             ),
-                            _buildGridCard(
-                              context: context,
-                              child: GymTrendCard(
-                                title: 'Low Volume Days',
-                                subtitle: 'Maintenance time',
-                                items: state.leastBusyDays
-                                    .map((day) => _formatWeekday(day))
-                                    .toList(),
-                                icon: Icons.calendar_today_outlined,
-                                color: Colors.green,
-                                limit: 4,
-                              ),
+                          ),
+                          const SizedBox(height: 16),
+                          _buildGridCard(
+                            context: context,
+                            child: EquipmentUtilizationSection(
+                              limit: 3,
                             ),
-                            _buildGridCard(
-                              context: context,
-                              child: GymTrendCard(
-                                title: 'Underutilized Programs',
-                                subtitle: 'Marketing opportunities',
-                                items: state.unpopularWorkouts,
-                                icon: Icons.fitness_center_outlined,
-                                color: Colors.purple,
-                                limit: 4,
-                              ),
-                            ),
-                            _buildGridCard(
-                              context: context,
-                              child: GymTrendCard(
-                                title: 'Highest Traffic Days',
-                                subtitle: 'Maximum staffing required',
-                                items: state.busiestDays
-                                    .map((day) => _formatWeekday(day))
-                                    .toList(),
-                                icon: Icons.calendar_today,
-                                color: Colors.red,
-                                limit: 4,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
+
+                      const SizedBox(height: 16),
 
                       const SizedBox(height: 32),
 
                       // Additional dashboard section
-                      Row(
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Expanded(
-                            child: Card(
-                              elevation: 2,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(24.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Actions Required',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleLarge
-                                          ?.copyWith(
-                                              fontWeight: FontWeight.bold),
-                                    ),
-                                    const SizedBox(height: 16),
-                                    _ActionItem(
-                                      title: 'Add peak hour classes',
-                                      description:
-                                          'Schedule more classes during high-demand times',
-                                      icon: Icons.add_circle,
-                                      color: Colors.blue,
-                                    ),
-                                    const Divider(),
-                                    _ActionItem(
-                                      title: 'Review marketing strategy',
-                                      description: 'For underutilized programs',
-                                      icon: Icons.campaign,
-                                      color: Colors.orange,
-                                    ),
-                                  ],
-                                ),
+                          Card(
+                            elevation: 2,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(24.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'Actions Required',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge
+                                        ?.copyWith(fontWeight: FontWeight.bold),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  _ActionItem(
+                                    title: 'Add peak hour classes',
+                                    description:
+                                        'Schedule more classes during high-demand times',
+                                    icon: Icons.add_circle,
+                                    color: Colors.blue,
+                                  ),
+                                  const Divider(),
+                                  _ActionItem(
+                                    title: 'Review marketing strategy',
+                                    description: 'For underutilized programs',
+                                    icon: Icons.campaign,
+                                    color: Colors.orange,
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -317,49 +257,19 @@ class DesktopDashboard extends StatelessWidget {
     required BuildContext context,
     required Widget child,
   }) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Card(
-          elevation: 2,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: child,
-          ),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: child,
         ),
       ),
     );
-  }
-
-  // Helper methods for formatting data
-  String _formatHour(int hour) {
-    final period = hour < 12 ? 'AM' : 'PM';
-    final displayHour = hour % 12 == 0 ? 12 : hour % 12;
-    return '$displayHour:00 $period';
-  }
-
-  String _formatWeekday(int day) {
-    switch (day) {
-      case 1:
-        return 'Monday';
-      case 2:
-        return 'Tuesday';
-      case 3:
-        return 'Wednesday';
-      case 4:
-        return 'Thursday';
-      case 5:
-        return 'Friday';
-      case 6:
-        return 'Saturday';
-      case 7:
-        return 'Sunday';
-      default:
-        return 'Unknown';
-    }
   }
 }
 
@@ -390,6 +300,7 @@ class _SummaryCard extends StatelessWidget {
         padding: const EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Row(
               children: [
@@ -442,6 +353,7 @@ class _ActionItem extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             padding: const EdgeInsets.all(8),
@@ -452,9 +364,10 @@ class _ActionItem extends StatelessWidget {
             child: Icon(icon, color: color),
           ),
           const SizedBox(width: 16),
-          Expanded(
+          Flexible(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   title,
@@ -477,32 +390,6 @@ class _ActionItem extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _DashboardCard extends StatelessWidget {
-  final String title;
-  final String value;
-  final IconData icon;
-
-  const _DashboardCard({
-    required this.title,
-    required this.value,
-    required this.icon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(icon, size: 48, color: Theme.of(context).primaryColor),
-        const SizedBox(height: 16),
-        Text(title, style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: 8),
-        Text(value, style: Theme.of(context).textTheme.headlineMedium),
-      ],
     );
   }
 }
