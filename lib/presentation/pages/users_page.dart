@@ -16,6 +16,15 @@ class UsersPage extends StatefulWidget {
 class _UsersPageState extends State<UsersPage> {
   final TextEditingController _searchController = TextEditingController();
   final Map<String, bool> _loadingStates = {};
+  String _currentFilter = 'All'; // Track current filter
+
+  // Define filter options
+  final List<String> _filterOptions = [
+    'All',
+    'Premium',
+    'Basic',
+    'Inactive Premium'
+  ];
 
   @override
   void initState() {
@@ -25,7 +34,7 @@ class _UsersPageState extends State<UsersPage> {
 
     // Setup search listener
     _searchController.addListener(() {
-      context.read<UsersCubit>().searchUsers(_searchController.text);
+      _applyFilters(); // Call our new method instead
     });
   }
 
@@ -47,15 +56,53 @@ class _UsersPageState extends State<UsersPage> {
             style: Theme.of(context).textTheme.headlineMedium,
           ),
           const SizedBox(height: 16),
-          TextField(
-            controller: _searchController,
-            decoration: InputDecoration(
-              hintText: 'Search users...',
-              prefixIcon: const Icon(Icons.search),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+          Row(
+            children: [
+              Expanded(
+                flex: 3,
+                child: TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Search users...',
+                    prefixIcon: const Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
               ),
-            ),
+              const SizedBox(width: 16),
+              Expanded(
+                flex: 1,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      isExpanded: true,
+                      value: _currentFilter,
+                      items: _filterOptions.map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (newValue) {
+                        if (newValue != null) {
+                          setState(() {
+                            _currentFilter = newValue;
+                          });
+                          _applyFilters();
+                        }
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 24),
           Expanded(
@@ -88,7 +135,6 @@ class _UsersPageState extends State<UsersPage> {
               DataColumn(label: Text('Role')),
               DataColumn(label: Text('Membership')),
               DataColumn(label: Text('Status')),
-              DataColumn(label: Text('Actions')),
             ],
             rows: users.map((user) {
               // Simple check for warning icon - premium user with no workout in 30+ days
@@ -116,24 +162,6 @@ class _UsersPageState extends State<UsersPage> {
                                 color: Colors.amber),
                           )
                         : const SizedBox.shrink(),
-                  ),
-                  DataCell(
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () {
-                            // Handle edit action
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () {
-                            // Handle delete action
-                          },
-                        ),
-                      ],
-                    ),
                   ),
                 ],
               );
@@ -274,5 +302,11 @@ class _UsersPageState extends State<UsersPage> {
         );
       },
     );
+  }
+
+  // Add this method to handle filter application
+  void _applyFilters() {
+    final String searchQuery = _searchController.text;
+    context.read<UsersCubit>().filterUsers(searchQuery, _currentFilter);
   }
 }
