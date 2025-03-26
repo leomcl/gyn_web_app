@@ -45,7 +45,7 @@ class DesktopDashboard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Flexible(
-                          flex: 3,
+                          flex: 5,
                           child: Card(
                             elevation: 2,
                             shape: RoundedRectangleBorder(
@@ -73,28 +73,6 @@ class DesktopDashboard extends StatelessWidget {
                                 ],
                               ),
                             ),
-                          ),
-                        ),
-                        const SizedBox(width: 24),
-                        Flexible(
-                          flex: 1,
-                          child: _SummaryCard(
-                            title: 'Members',
-                            value: '1,248',
-                            subtitle: '+5% this month',
-                            color: Colors.blue,
-                            icon: Icons.people,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Flexible(
-                          flex: 1,
-                          child: _SummaryCard(
-                            title: 'Revenue',
-                            value: '\$45,250',
-                            subtitle: '+12% vs last month',
-                            color: Colors.green,
-                            icon: Icons.monetization_on,
                           ),
                         ),
                       ],

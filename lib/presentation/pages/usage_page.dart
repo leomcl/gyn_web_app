@@ -79,11 +79,9 @@ class UsagePage extends StatelessWidget {
       {double fontSize = 24}) {
     return Text(
       title,
-      style: TextStyle(
-        fontSize: fontSize,
-        fontWeight: FontWeight.bold,
-        color: Theme.of(context).primaryColor,
-      ),
+      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+            fontSize: fontSize,
+          ),
     );
   }
 
@@ -199,17 +197,17 @@ class UsagePage extends StatelessWidget {
       segments: const [
         ButtonSegment<TimePeriod>(
           value: TimePeriod.daily,
-          label: Text('Daily'),
+          label: Text('Day'),
           icon: Icon(Icons.view_day),
         ),
         ButtonSegment<TimePeriod>(
           value: TimePeriod.weekly,
-          label: Text('Weekly'),
+          label: Text('Week'),
           icon: Icon(Icons.view_week),
         ),
         ButtonSegment<TimePeriod>(
           value: TimePeriod.monthly,
-          label: Text('Monthly'),
+          label: Text('Month'),
           icon: Icon(Icons.calendar_view_month),
         ),
       ],
