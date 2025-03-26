@@ -7,8 +7,6 @@ import '../widgets/member_traffic_section.dart';
 import '../widgets/workout_section.dart';
 import '../widgets/class_performance_section.dart';
 import '../widgets/staffing_requirements_section.dart';
-import '../pages/gym_classes_page.dart';
-import '../pages/users_page.dart';
 import '../cubit/navigation/navigation_cubit.dart';
 
 class DashboardPage extends StatelessWidget {
