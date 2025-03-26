@@ -7,6 +7,9 @@ import '../widgets/member_traffic_section.dart';
 import '../widgets/workout_section.dart';
 import '../widgets/class_performance_section.dart';
 import '../widgets/staffing_requirements_section.dart';
+import '../pages/gym_classes_page.dart';
+import '../pages/users_page.dart';
+import '../cubit/navigation/navigation_cubit.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({Key? key}) : super(key: key);
@@ -227,6 +230,11 @@ class DesktopDashboard extends StatelessWidget {
                                         'Schedule more classes during high-demand times',
                                     icon: Icons.add_circle,
                                     color: Colors.blue,
+                                    onAction: () {
+                                      context
+                                          .read<NavigationCubit>()
+                                          .navigateTo(AppPage.classes);
+                                    },
                                   ),
                                   const Divider(),
                                   _ActionItem(
@@ -234,6 +242,11 @@ class DesktopDashboard extends StatelessWidget {
                                     description: 'For underutilized programs',
                                     icon: Icons.campaign,
                                     color: Colors.orange,
+                                    onAction: () {
+                                      context
+                                          .read<NavigationCubit>()
+                                          .navigateTo(AppPage.users);
+                                    },
                                   ),
                                 ],
                               ),
@@ -340,12 +353,14 @@ class _ActionItem extends StatelessWidget {
   final String description;
   final IconData icon;
   final Color color;
+  final VoidCallback onAction;
 
   const _ActionItem({
     required this.title,
     required this.description,
     required this.icon,
     required this.color,
+    required this.onAction,
   });
 
   @override
@@ -384,9 +399,7 @@ class _ActionItem extends StatelessWidget {
           ),
           IconButton(
             icon: const Icon(Icons.chevron_right),
-            onPressed: () {
-              // Action
-            },
+            onPressed: onAction,
           ),
         ],
       ),
