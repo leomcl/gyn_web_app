@@ -15,7 +15,6 @@ class UsersPage extends StatefulWidget {
 
 class _UsersPageState extends State<UsersPage> {
   final TextEditingController _searchController = TextEditingController();
-  final Map<String, bool> _loadingStates = {};
   String _currentFilter = 'All'; // Track current filter
 
   // Define filter options
