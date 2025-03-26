@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:snow_stats_app/domain/entities/gym_class.dart';
 import '../cubit/gym_classes/gym_classes_cubit.dart';
 import '../cubit/gym_classes/gym_classes_state.dart';
+import '../widgets/class_performance_section.dart';
 
 class GymClassesPage extends StatelessWidget {
   const GymClassesPage({Key? key}) : super(key: key);
@@ -113,6 +114,24 @@ class GymClassesPage extends StatelessWidget {
                             ? const Center(child: Text('No classes available'))
                             : _buildClassesGrid(context, state),
               ),
+
+              // Fixed widget at the bottom - using ClassPerformanceSection
+              const SizedBox(height: 16),
+              Container(
+                height: 180, // Fixed height
+                width: double.infinity,
+                child: Card(
+                  elevation: 4,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: SingleChildScrollView(
+                      child: ClassPerformanceSection(
+                        limit: 4,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         );
@@ -124,9 +143,9 @@ class GymClassesPage extends StatelessWidget {
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
-        childAspectRatio: 1.5,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
+        childAspectRatio: 2.0,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
       ),
       itemCount: state.classes.length,
       itemBuilder: (context, index) {
@@ -427,25 +446,25 @@ class _ClassCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       clipBehavior: Clip.antiAlias,
-      elevation: 4,
+      elevation: 3,
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(12.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 gymClass.className,
-                style: Theme.of(context).textTheme.titleLarge,
+                style: Theme.of(context).textTheme.titleMedium,
                 overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 4),
               Text(
                 _formatTimeWithDay(gymClass.classTime, gymClass.dayOfWeek),
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: Theme.of(context).textTheme.bodySmall,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 4),
               Expanded(
                 child: Wrap(
                   spacing: 4,
