@@ -411,89 +411,103 @@ class _OccupancyChartState extends State<OccupancyChart> {
               ),
             ),
 
-            // Bars
+            // Bars - Fixed to have proper constraints
             Positioned(
               left: 40,
               right: 5,
               top: 0,
               bottom: 30,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: List.generate(widget.data.length, (i) {
-                  final value = widget.data[i].value.toDouble();
-                  final height = (value / maxY) * (constraints.maxHeight - 30);
-                  final isHovered = i == hoveredIndex;
+              child: LayoutBuilder(
+                builder: (context, barConstraints) {
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: List.generate(widget.data.length, (i) {
+                      final value = widget.data[i].value.toDouble();
+                      final height =
+                          (value / maxY) * (barConstraints.maxHeight);
+                      final isHovered = i == hoveredIndex;
 
-                  return Expanded(
-                    child: MouseRegion(
-                      onEnter: (_) => setState(() => hoveredIndex = i),
-                      onExit: (_) => setState(() => hoveredIndex = null),
-                      child: Stack(
-                        alignment: Alignment.bottomCenter,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 4),
-                            decoration: BoxDecoration(
-                              color:
-                                  isHovered ? Colors.blue : _getBarColor(value),
-                              borderRadius: const BorderRadius.vertical(
-                                  top: Radius.circular(3)),
-                            ),
-                            height: height,
-                          ),
-                          if (isHovered)
-                            Positioned(
-                              top: constraints.maxHeight - 30 - height - 24,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 6, vertical: 3),
+                      return Expanded(
+                        child: MouseRegion(
+                          onEnter: (_) => setState(() => hoveredIndex = i),
+                          onExit: (_) => setState(() => hoveredIndex = null),
+                          child: Stack(
+                            alignment: Alignment.bottomCenter,
+                            children: [
+                              Container(
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 4),
                                 decoration: BoxDecoration(
-                                  color: Colors.black87,
-                                  borderRadius: BorderRadius.circular(3),
+                                  color: isHovered
+                                      ? Colors.blue
+                                      : _getBarColor(value),
+                                  borderRadius: const BorderRadius.vertical(
+                                      top: Radius.circular(3)),
                                 ),
-                                child: Text(
-                                  '${value.toInt()} people',
-                                  style: const TextStyle(
-                                      color: Colors.white, fontSize: 11),
-                                ),
+                                height: height,
                               ),
-                            ),
-                        ],
-                      ),
-                    ),
+                              if (isHovered && height > 0)
+                                Positioned(
+                                  bottom:
+                                      height + 4, // Position tooltip above bar
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 6, vertical: 3),
+                                    decoration: BoxDecoration(
+                                      color: Colors.black87,
+                                      borderRadius: BorderRadius.circular(3),
+                                    ),
+                                    child: Text(
+                                      '${value.toInt()} people',
+                                      style: const TextStyle(
+                                          color: Colors.white, fontSize: 11),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
                   );
-                }),
+                },
               ),
             ),
 
-            // X-axis labels
+            // X-axis labels - Fixed to handle constraints properly
             Positioned(
               left: 40,
               right: 5,
               bottom: 0,
               height: 25,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: List.generate(widget.data.length, (i) {
-                  final hour = widget.data[i].key;
-                  final showLabel = widget.data.length <= 12 ||
-                      i % 2 == 0 ||
-                      i == widget.data.length - 1;
+              child: LayoutBuilder(
+                builder: (context, labelConstraints) {
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: List.generate(widget.data.length, (i) {
+                      final hour = widget.data[i].key;
+                      final showLabel = widget.data.length <= 12 ||
+                          i % 2 == 0 ||
+                          i == widget.data.length - 1;
 
-                  return Expanded(
-                    child: showLabel
-                        ? Padding(
-                            padding: const EdgeInsets.only(top: 2),
-                            child: Text(
-                              _formatHour(hour),
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontSize: 11, color: Colors.grey[700]),
-                            ),
-                          )
-                        : const SizedBox(),
+                      return Expanded(
+                        child: showLabel
+                            ? Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 2),
+                                  child: Text(
+                                    _formatHour(hour),
+                                    style: TextStyle(
+                                        fontSize: 11, color: Colors.grey[700]),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              )
+                            : const SizedBox(),
+                      );
+                    }),
                   );
-                }),
+                },
               ),
             ),
           ],

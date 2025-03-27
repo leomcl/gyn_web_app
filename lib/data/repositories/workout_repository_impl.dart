@@ -5,7 +5,7 @@ import 'package:snow_stats_app/domain/repositories/workout_repository.dart';
 
 class WorkoutRepositoryImpl implements WorkoutRepository {
   final FirebaseFirestore _firestore;
-  final String _collectionName = 'gymUsageHistory';
+  final String _collectionName = 'gymUsageHistoryMock';
 
   WorkoutRepositoryImpl({FirebaseFirestore? firestore})
       : _firestore = firestore ?? FirebaseFirestore.instance;

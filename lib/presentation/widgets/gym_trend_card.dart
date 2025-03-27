@@ -67,7 +67,7 @@ class GymTrendCard extends StatelessWidget {
                       ),
                 ),
                 const Divider(height: 24),
-                // Items list - dynamically sized based on content
+                // Items list - FIXED IMPLEMENTATION
                 displayItems.isEmpty
                     ? Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -84,43 +84,44 @@ class GymTrendCard extends StatelessWidget {
                           ),
                         ),
                       )
-                    : SizedBox(
+                    : Container(
                         height: listHeight,
-                        child: ListView.builder(
-                          padding: EdgeInsets.zero,
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: displayItems.length,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 4.0),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '${index + 1}.',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: color,
+                        constraints: BoxConstraints(
+                            minHeight: 30, maxHeight: listHeight),
+                        child: Column(
+                          children: [
+                            // Replace ListView with Column for small lists
+                            ...List.generate(displayItems.length, (index) {
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 4.0),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '${index + 1}.',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: color,
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Flexible(
-                                    child: Text(
-                                      displayItems[index],
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium,
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 2,
+                                    const SizedBox(width: 8),
+                                    Flexible(
+                                      child: Text(
+                                        displayItems[index],
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 2,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
+                                  ],
+                                ),
+                              );
+                            }),
+                          ],
                         ),
                       ),
               ],

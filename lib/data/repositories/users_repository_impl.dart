@@ -21,7 +21,7 @@ class UsersRepositoryImpl implements UsersRepository {
         return [];
       }
 
-      final querySnapshot = await _firestore.collection('users').get();
+      final querySnapshot = await _firestore.collection('usersMock').get();
 
       return querySnapshot.docs.map((doc) {
         final data = doc.data();
@@ -40,7 +40,7 @@ class UsersRepositoryImpl implements UsersRepository {
   @override
   Future<User?> getUserById(String uid) async {
     try {
-      final docSnapshot = await _firestore.collection('users').doc(uid).get();
+      final docSnapshot = await _firestore.collection('usersMock').doc(uid).get();
 
       if (!docSnapshot.exists) {
         return null;
